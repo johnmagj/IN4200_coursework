@@ -11,7 +11,7 @@ int main() {
 
         // Each term is 1/4 of the pervious term, 
         // By multiplying with -1.0 each iteration we flip the sing, thus no need for if-test.
-                        
+
         term *= -0.25;
 
         sum += term;
