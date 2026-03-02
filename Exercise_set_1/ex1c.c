@@ -19,8 +19,8 @@ int main() {
     double t_tot;
 
     t_start = clock();
-    for(int i = 0; i < m; i++) {
-        for(int j = 0; j < n; j++) {
+    for (int i = 0; i < m; i++) {
+        for (int j = 0; j < n; j++) {
 
             arr1[i][j] = 1;
 
@@ -33,8 +33,8 @@ int main() {
     printf("%f\n", t_tot);
 
     t_start = clock();
-    for(int j = 0; j < m; j++) {
-        for(int i = 0; i < n; i++) {
+    for (int j = 0; j < m; j++) {
+        for (int i = 0; i < n; i++) {
 
             arr2[i][j] = 1;
 
@@ -48,6 +48,14 @@ int main() {
 
     printf("%d\n", arr1[0][0]);
     printf("%d\n", arr2[0][0]);
+
+    for (int i = 0; i < m; i++) {
+        free(arr1[i]);
+        free(arr2[i]);
+    }
+
+    free(arr1);
+    free(arr2);
 
     return 0;
 }
