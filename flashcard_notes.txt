@@ -1,0 +1,9 @@
+- chunks (OpenMP)?
+- false sharing?
+- reduction (OpenMP)
+- race condition
+
+- "first touch": important "who" initialize the e.g. a array
+	- master vs fork(?) threads
+	- ONLY ONE thread can initialize
+- 
