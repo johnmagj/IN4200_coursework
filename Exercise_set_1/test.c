@@ -47,13 +47,19 @@ int main() {
 
     // printf("%d", sizeof(*ptr));
 
-    int *ptr_arr = malloc(5*sizeof(ptr_arr));
+    // int *ptr_arr = malloc(5*sizeof(ptr_arr));
+
+    // for (int i = 0; i < 5; i++) {
+    // printf("%p\n", (void*)&ptr_arr[i]);
+    // }
+
+    // free(ptr_arr);
+
+    int a[5] = {1, 2};
 
     for (int i = 0; i < 5; i++) {
-    printf("%p\n", (void*)&ptr_arr[i]);
+        printf("%d\n", a[i]);
     }
-
-    free(ptr_arr);
 
     return 0;
 
