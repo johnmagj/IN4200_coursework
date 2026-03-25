@@ -12,7 +12,7 @@ void read_sparse_matrix_from_file(const char *filename, struct sparse_mat_coo *m
 
     if (file == NULL) {
         printf("Error in opening file");
-        return;
+        exit(EXIT_FAILURE);
     }
 
     int m_rows, n_cols, total_values;
