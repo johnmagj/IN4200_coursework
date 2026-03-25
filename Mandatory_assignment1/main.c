@@ -31,24 +31,24 @@ int main(int nargs, char **args) {
     C_coo.val = malloc(C_coo.nnz*sizeof(*C_coo.val));
     
     int n = S_coo.n;
-    #define idx(i,j) (i*n + j)
-
+    // Create dense matrices A and B, 
     double *A = malloc(n*n*sizeof(*A));
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            A[idx(i,j)] = i + j;
-        }
-    }
-
     double *B = malloc(n*n*sizeof(*B));
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            B[idx(i,j)] = i + j;
+            A[idx(i,j)] = i + j;
+            B[idx(i,j)] = 2*i + 3*j;
+            if (i < 5 && j < 5) {
+                printf("%g ", B[idx(i,j)]);
+            }
+        if (i < 5) {
+            printf("\n");
         }
     }
+    
+    printf("%f", B[idx(10,10)]);
 
-
-    printf("%lf", B[idx(10,10)]);
+    sampled_matrix_multiplication_coo(&C_coo, A, B, &S_coo);
 
     free(S_coo.row_idx);
     free(S_coo.col_idx);

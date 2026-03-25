@@ -1,6 +1,8 @@
 #ifndef FUNCTION_DECLARATIONS_H
 #define FUNCTION_DECLARATIONS_H
 
+#define idx(i,j) (i*n + j)
+
 struct sparse_mat_coo {
     int n, nnz;
     double *val;
