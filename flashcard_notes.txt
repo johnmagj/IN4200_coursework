@@ -1,3 +1,6 @@
+Ch. 3:
+- blocking
+
 - chunks (OpenMP)?
 - false sharing?
 - reduction (OpenMP)
