@@ -57,4 +57,3 @@ void read_sparse_matrix_from_file(const char *filename, struct sparse_mat_coo *m
     // free(cols);
     // free(values);
 }
-

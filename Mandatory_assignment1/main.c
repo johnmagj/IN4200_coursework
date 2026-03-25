@@ -45,16 +45,23 @@ int main(int nargs, char **args) {
     // Fill A and B with some values
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            A[i][j] = i + j;
-            B[i][j] = 2*i + 3*j;
+            A[i][j] = 1;
+            B[i][j] = 1;
         }
     }
-    
-    // sampled_matrix_multiplication_coo(&C_coo, A, B, &S_coo);
+
+    sampled_matrix_multiplication_coo(&C_coo, A, B, &S_coo);
+
+    int nnz = S_coo.nnz;
+    printf("%d\n", nnz);
+    for (int i = 0; i < nnz; i++) {
+        printf("%f\n", C_coo.val[i]);        
+    }
 
     free(S_coo.row_idx);
     free(S_coo.col_idx);
     free(S_coo.val);
+    free(C_coo.val);
     free(A[0]);
     free(A);
     free(B[0]);
