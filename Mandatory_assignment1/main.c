@@ -6,7 +6,7 @@ int main(int nargs, char **args) {
 
     char filename_path[256];
     //char filename_path[] = "Data/1138_bus.mtx";
-
+    double **A, **B;
     struct sparse_mat_coo S_coo, C_coo;
     //struct spare_mat_crs S_crs, C_crs;
     
@@ -31,29 +31,33 @@ int main(int nargs, char **args) {
     C_coo.val = malloc(C_coo.nnz*sizeof(*C_coo.val));
     
     int n = S_coo.n;
-    // Create dense matrices A and B, 
-    double *A = malloc(n*n*sizeof(*A));
-    double *B = malloc(n*n*sizeof(*B));
+    // Create dense matrices A and B,
+    A = malloc(n * sizeof(*A));
+    A[0] = malloc(n*n*sizeof(*A[0]));
+
+    B = malloc(n * sizeof(*B));
+    B[0] = malloc(n*n*sizeof(*B[0]));
+
+    for (int i = 1; i < n; i++) {
+        A[i] = &(A[0][i*n]);
+        B[i] = &(B[0][i*n]);
+    }
+    // Fill A and B with some values
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < n; j++) {
-            A[idx(i,j)] = i + j;
-            B[idx(i,j)] = 2*i + 3*j;
-            if (i < 5 && j < 5) {
-                printf("%g ", B[idx(i,j)]);
-            }
-        if (i < 5) {
-            printf("\n");
+            A[i][j] = i + j;
+            B[i][j] = 2*i + 3*j;
         }
     }
     
-    printf("%f", B[idx(10,10)]);
-
-    sampled_matrix_multiplication_coo(&C_coo, A, B, &S_coo);
+    // sampled_matrix_multiplication_coo(&C_coo, A, B, &S_coo);
 
     free(S_coo.row_idx);
     free(S_coo.col_idx);
     free(S_coo.val);
+    free(A[0]);
     free(A);
+    free(B[0]);
     free(B);
 
     return 0;

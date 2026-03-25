@@ -13,8 +13,7 @@ void sampled_matrix_multiplication_coo(struct sparse_mat_coo *C, double *A, doub
         int j = S->col_idx[index];
 
         for (int k = 0; k < nnz; k++) {
-            
-
+            A[][]
         } 
 
 
