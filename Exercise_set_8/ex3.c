@@ -23,7 +23,7 @@ int main() {
         for (int i = 0; i < n - 1; i++) {
             // If even index
             if (i%2 == 0) {
-                for (int j = 0; j < n; j+=2) {
+                for (int j = 0; j < n - 1; j+=2) {
                     if (arr[j] > arr[j+1]) {
                         swap(&arr[j], &arr[j+1]);
                         num_swaps += 1;
