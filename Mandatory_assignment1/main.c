@@ -8,7 +8,7 @@ int main(int nargs, char **args) {
     //char filename_path[] = "Data/1138_bus.mtx";
     double **A, **B;
     struct sparse_mat_coo S_coo, C_coo;
-    //struct spare_mat_crs S_crs, C_crs;
+    struct sparse_mat_crs S_crs, C_crs;
     
     printf("Enter relative file path to the .mtx file:");
     scanf("%s", filename_path);
@@ -52,11 +52,12 @@ int main(int nargs, char **args) {
 
     sampled_matrix_multiplication_coo(&C_coo, A, B, &S_coo);
 
-    int nnz = S_coo.nnz;
-    printf("%d\n", nnz);
-    for (int i = 0; i < nnz; i++) {
-        printf("%f\n", C_coo.val[i]);        
-    }
+    // allocate CRS data structure C_crs
+    S_crs.n = S_coo.n; S_crs.nnz = S_coo.nnz;
+    S_crs.row_ptr = (int*)malloc((S_crs.n+1) * sizeof(int));
+    S_crs.col_idx = (int*)malloc(S_crs.nnz * sizeof(int));
+    S_crs.val = (double*)malloc(S_crs.nnz * sizeof(double));
+
 
     free(S_coo.row_idx);
     free(S_coo.col_idx);

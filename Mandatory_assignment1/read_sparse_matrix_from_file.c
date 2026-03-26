@@ -31,6 +31,11 @@ void read_sparse_matrix_from_file(const char *filename, struct sparse_mat_coo *m
         }
     }
 
+    if (m_rows != n_cols) {
+        printf("Sparse data matrix NOT square");
+        exit(EXIT_FAILURE);
+    }
+
     int *rows = malloc(total_values*sizeof(*rows));
     int *cols = malloc(total_values*sizeof(*cols));
     double *values = malloc(total_values*sizeof(*values));
@@ -39,8 +44,10 @@ void read_sparse_matrix_from_file(const char *filename, struct sparse_mat_coo *m
     int i = 0;
     while (fgets(line_in_file, sizeof(line_in_file), file) != NULL) {
 
-        sscanf(line_in_file, "%d %d %lf", &rows[i], &cols[i], &values[i]);
-        i += 1;
+        if (sscanf(line_in_file, "%d %d %lf", &rows[i], &cols[i], &values[i]) == 3) {
+            printf("%s", line_in_file);
+            i += 1;
+        }
     }
     
     fclose(file);
