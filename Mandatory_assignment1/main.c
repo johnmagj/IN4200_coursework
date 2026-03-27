@@ -4,16 +4,14 @@
 
 int main(int nargs, char **args) {
 
-    char filename_path[256];
-    //char filename_path[] = "Data/1138_bus.mtx";
+    // char filename_path[256];
+    char filename_path[] = "Data/1138_bus.mtx";
     double **A, **B;
     struct sparse_mat_coo S_coo, C_coo;
     struct sparse_mat_crs S_crs, C_crs;
     
-    printf("Enter relative file path to the .mtx file:");
-    scanf("%s", filename_path);
-    
-    // printf("%s", filename_path);
+    // printf("Enter relative file path to the .mtx file:");
+    // scanf("%s", filename_path);
 
     read_sparse_matrix_from_file(filename_path, &S_coo);
 
@@ -54,13 +52,15 @@ int main(int nargs, char **args) {
 
     // allocate CRS data structure C_crs
     S_crs.n = S_coo.n; S_crs.nnz = S_coo.nnz;
-    S_crs.row_ptr = (int*)malloc((S_crs.n+1) * sizeof(int));
+    S_crs.row_ptr = (int*)malloc((S_crs.n + 1) * sizeof(int));
     S_crs.col_idx = (int*)malloc(S_crs.nnz * sizeof(int));
     S_crs.val = (double*)malloc(S_crs.nnz * sizeof(double));
 
-
     translate_coo_to_crs(&S_coo, &S_crs);
 
+    // for (int i = 0; i < S_crs.n; i++) {
+    //     printf("%d\n", S_crs.row_ptr[i]);
+    // }
 
     free(S_coo.row_idx);
     free(S_coo.col_idx);
