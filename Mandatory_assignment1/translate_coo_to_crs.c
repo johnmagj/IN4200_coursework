@@ -3,19 +3,15 @@
 #include "function_declarations.h"
 
 void swap_ints(int *elem_A, int *elem_B) {
-
     int new_A = *elem_B;
     int new_B = *elem_A;
-
     *elem_A = new_A;
     *elem_B = new_B;
 }
 
 void swap_doubles(double *elem_A, double *elem_B) {
-
     double new_A = *elem_B;
     double new_B = *elem_A;
-
     *elem_A = new_A;
     *elem_B = new_B;
 }
@@ -96,11 +92,34 @@ void translate_coo_to_crs (struct sparse_mat_coo *mat_coo, struct sparse_mat_crs
     // }
 
     // Now we can translate to CRS format
+    // REMEMBER: WE READ 1-based values, AND FILL USING 0-based INDEXING
+
+    int prev_row = 0;
     for (int i = 0; i < nnz; i++) {
-        
 
+        if (row_indices[i] > prev_row) {
+            // Indicate new row
+            if (row_indices[i] > prev_row + 1) {
+                // Indicate one or more sparse rows
+                for (int r = 0; r < row_indices[i] - row_indices[i-1]; r++) {
+                }
+                
+                row_indices[i-1];
+            }
 
+            else {
+                mat_crs->col_idx[i] = cols_indices[i];
+                mat_crs->val[i] = vals[i];
+                mat_crs->row_ptr[i] = i + 1;
 
+                prev_row += 1;
+            }
+
+        elif (row_indices[i] == prev_row) {
+            // New value current row, different column
+            mat_crs->col_idx[i] = cols_indices[i];
+            mat_crs->val[i] = vals[i];
+        }
     }
 
 }
