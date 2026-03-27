@@ -45,7 +45,7 @@ void read_sparse_matrix_from_file(const char *filename, struct sparse_mat_coo *m
     while (fgets(line_in_file, sizeof(line_in_file), file) != NULL) {
 
         if (sscanf(line_in_file, "%d %d %lf", &rows[i], &cols[i], &values[i]) == 3) {
-            printf("%s", line_in_file);
+            // printf("%s", line_in_file);
             i += 1;
         }
     }

@@ -20,4 +20,5 @@ void sampled_matrix_multiplication_coo(struct sparse_mat_coo *C, double **A, dou
 
         C->val[index] = sum*S->val[index];
     }
+
 }

@@ -59,6 +59,9 @@ int main(int nargs, char **args) {
     S_crs.val = (double*)malloc(S_crs.nnz * sizeof(double));
 
 
+    translate_coo_to_crs(&S_coo, &S_crs);
+
+
     free(S_coo.row_idx);
     free(S_coo.col_idx);
     free(S_coo.val);
