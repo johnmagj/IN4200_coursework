@@ -4,14 +4,14 @@
 
 int main(int nargs, char **args) {
 
-    // char filename_path[256];
-    char filename_path[] = "Data/1138_bus.mtx";
+    char filename_path[256];
+    // char filename_path[] = "Data/1138_bus.mtx";
     double **A, **B;
     struct sparse_mat_coo S_coo, C_coo;
     struct sparse_mat_crs S_crs, C_crs;
     
-    // printf("Enter relative file path to the .mtx file:");
-    // scanf("%s", filename_path);
+    printf("Enter relative file path to the .mtx file:");
+    scanf("%s", filename_path);
 
     read_sparse_matrix_from_file(filename_path, &S_coo);
 
