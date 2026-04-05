@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "function_declarations.h"
 
 void swap_ints(int *elem_A, int *elem_B) {
@@ -77,70 +78,48 @@ void translate_coo_to_crs (struct sparse_mat_coo *mat_coo, struct sparse_mat_crs
 
     int n = mat_coo->n;
     int nnz = mat_coo->nnz;
-    int *row_indices = mat_coo->row_idx;
-    int *cols_indices = mat_coo->col_idx;
-    double *vals = mat_coo->val;
 
-    // Since the the data in the matrix market format file can be both row or column sorted (or even unsorted),
+    // Create copies of the arrays in struct spare_mat_coo *mat_coo to be used in the preceding calculation,
+    // in case the original is needed later in the main program
+    int *row_indices = malloc(nnz*sizeof(*row_indices));
+    int *cols_indices = malloc(nnz*sizeof(*cols_indices));
+    double *vals = malloc(nnz*sizeof(*vals));
+    memcpy(row_indices, mat_coo->row_idx, nnz*sizeof(*row_indices));
+    memcpy(cols_indices, mat_coo->col_idx , nnz*sizeof(*cols_indices));
+    memcpy(vals, mat_coo->val, nnz*sizeof(*vals));
+
+    // Since the the data in the matrix market format file can be both row or column sorted, or even unsorted,
     // we sort the data by row index, then column index
     odd_even_sort_2_of_3_arrays(nnz, row_indices, cols_indices, vals);
-
-    // for (int i = 0; i < nnz; i++) {
-    //     printf("i: %d, row: %d, col: %d, val: %f\n", i, row_indices[i], cols_indices[i], vals[i]);
-    // }
-
-    // Convert arrays to 0 based indexing
-    for (int i = 0; i < nnz; i++){
-        row_indices[i] -= - 1;
-        cols_indices[i] -= -1;
-    }
 
     mat_crs->col_idx = cols_indices;
     mat_crs->val = vals;
 
-    // Set all elements of the CRS row ptr to zero
+    mat_crs->row_ptr[0] = 0;
+    int current_row = 1;
+
+    for (int i = 0; i < nnz; i++) {
+
+        while (row_indices[i] > current_row) {
+            mat_crs->row_ptr[current_row] = i;
+            current_row += 1;
+        }
+    }
+
+    for (int i = current_row; i < n+1; i++) {
+        mat_crs->row_ptr[i] = nnz;
+    }
+        
+    printf("loop done\n"); 
+
+    printf("current row: %d\n", current_row);
+
     for (int i = 0; i < n+1; i++) {
-        mat_crs->row_ptr[i] = 0;
+        printf("%d\n", mat_crs->row_ptr[i]);
     }
 
-    // The row indices are base 1, check if there are empty leading rows
-    if (row_indices[0] != 0) {
-        for (int i = 0; i < row_indices[0]; i++) { 
-            mat_crs->row_ptr[i] = 0;
-        }
-    }
-
-    // Create new array identical to row_indices so we won't overwrite it next
-    int *intermediate_row_ptr = malloc(nnz*sizeof(*intermediate_row_ptr));
-    for (int i = 0; i < nnz; i++) {
-        intermediate_row_ptr[i] = row_indices[i]; 
-    }
-    // Trailing rows of same number are set to zero
-    intermediate_row_ptr[0] = row_indices[0];
-    for (int i = 0; i < nnz; i++) {
-        if (intermediate_row_ptr[i] == row_indices[i-1]) {
-            intermediate_row_ptr[i] = 0;
-        }
-    }
-    // 
-    int ptr_id = 0;
-    int ptr_idx = 0;
-    for (int i = 0; i < nnz; i++) {
-        if (intermediate_row_ptr[i] != 0) {
-            mat_crs->row_ptr[ptr_idx] = ptr_id;
-            ptr_idx += 1;
-        }
-    
-        if (intermediate_row_ptr[i] == 0) {
-            mat_crs->row_ptr[ptr_idx] = ptr_id;
-        }
-        ptr_id += 1;
-    }
-
-    // for (int i = 0; i <= n; i++) {
-    //     printf("row_ptr: %d, inter_ptr: %d\n", mat_crs->row_ptr[i], intermediate_row_ptr[i]);
-    // }
-
-    free(intermediate_row_ptr);
+    free(row_indices);
+    free(cols_indices);
+    free(vals);
 
 }
