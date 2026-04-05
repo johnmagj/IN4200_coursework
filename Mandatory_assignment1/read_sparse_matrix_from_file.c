@@ -67,16 +67,27 @@ void read_sparse_matrix_from_file(const char *filename, struct sparse_mat_coo *m
     // Index first row of values as 0
     int i = 0;
     while (fgets(line_in_file, sizeof(line_in_file), file) != NULL) {
+        double temp_row;
+        double temp_col;
 
-        if (sscanf(line_in_file, "%d %d %lf", &rows[i], &cols[i], &values[i]) == 3) {
-            // printf("%s", line_in_file);
+        // We read floats in line_in_file since a line like: 5 1.4989, would be read 5, 1, 0.4989 with %d %d %lf,
+        // this would again not trigger the check line check right bellow.
+        // Explicitly casting back to int with (int) 
+        if (sscanf(line_in_file, "%lf %lf %lf", &temp_row, &temp_col, &values[i]) == 3) {
+            rows[i] = (int)temp_row;
+            cols[i] = (int)temp_col;
             i += 1;
+        }
+
+        else {
+            printf("Data line not formatted correctly, data line: %d\n", i);
+            exit(EXIT_FAILURE);
         }
     }
     
     fclose(file);
 
-    // Asigning matrix values to struct
+    // Assigning matrix values to struct
     // We just pick n to be the number of rows in the data matrix
     matrix->n = m_rows;
     matrix->nnz = total_values;
@@ -84,7 +95,4 @@ void read_sparse_matrix_from_file(const char *filename, struct sparse_mat_coo *m
     matrix->col_idx = cols;
     matrix->val = values;
     
-    // free(rows);
-    // free(cols);
-    // free(values);
 }
