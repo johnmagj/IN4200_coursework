@@ -92,21 +92,21 @@ void translate_coo_to_crs (struct sparse_mat_coo *mat_coo, struct sparse_mat_crs
     // we sort the data by row index, then column index
     odd_even_sort_2_of_3_arrays(nnz, row_indices, cols_indices, vals);
 
-    mat_crs->col_idx = cols_indices;
-    mat_crs->val = vals;
+    memcpy(mat_crs->col_idx, cols_indices, nnz * sizeof(int));
+    memcpy(mat_crs->val, vals, nnz * sizeof(double));
 
     mat_crs->row_ptr[0] = 0;
-    int current_row = 1;
+    int current_row = 0;
 
     for (int i = 0; i < nnz; i++) {
 
         while (row_indices[i] > current_row) {
-            mat_crs->row_ptr[current_row] = i;
             current_row += 1;
+            mat_crs->row_ptr[current_row] = i;
         }
     }
 
-    for (int i = current_row; i < n+1; i++) {
+    for (int i = current_row + 1; i < n+1; i++) {
         mat_crs->row_ptr[i] = nnz;
     }
         

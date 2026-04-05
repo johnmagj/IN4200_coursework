@@ -28,6 +28,12 @@ int main(int nargs, char **args) {
     printf("Last: %d, %d, %f\n", S_coo.row_idx[S_coo.nnz-1], S_coo.col_idx[S_coo.nnz-1], S_coo.val[S_coo.nnz-1]);
     printf("--------------------------------\n");
 
+    // Convert from 1-based to 0-based indexing
+    for (int i = 0; i < S_coo.nnz; i++) {
+        S_coo.row_idx[i] -= 1;
+        S_coo.col_idx[i] -= 1;
+    }
+
     C_coo.n = S_coo.n; 
     C_coo.nnz = S_coo.nnz;
     C_coo.row_idx = S_coo.row_idx;
@@ -71,6 +77,14 @@ int main(int nargs, char **args) {
     //     printf("%d\n", S_crs.row_ptr[i]);
     // }
 
+    // allocate CRS data structure C_crs
+    C_crs.n = S_crs.n; C_crs.nnz = S_crs.nnz;
+    C_crs.row_ptr = S_crs.row_ptr;
+    C_crs.col_idx = S_crs.col_idx;
+    C_crs.val = (double*)malloc(C_crs.nnz * sizeof(double));
+
+    // sampled_matrix_multiplication_crs (&C_crs, A, B, &S_crs);
+
     free(S_coo.row_idx);
     free(S_coo.col_idx);
     free(S_coo.val);
@@ -79,6 +93,10 @@ int main(int nargs, char **args) {
     free(A);
     free(B[0]);
     free(B);
+    free(S_crs.row_ptr);
+    free(S_crs.col_idx);
+    free(S_crs.val);
+    free(C_crs.val);
 
     return 0;
 }
