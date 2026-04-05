@@ -19,4 +19,6 @@ void sampled_matrix_multiplication_coo(struct sparse_mat_coo *C, double **A, dou
 
 void translate_coo_to_crs (struct sparse_mat_coo *mat_coo, struct sparse_mat_crs *mat_crs);
 
+void sampled_matrix_multiplication_crs(struct sparse_mat_crs *C, double **A, double **B, struct sparse_mat_crs *S);
+
 #endif
