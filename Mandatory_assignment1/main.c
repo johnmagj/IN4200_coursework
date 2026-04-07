@@ -83,7 +83,9 @@ int main(int nargs, char **args) {
     C_crs.col_idx = S_crs.col_idx;
     C_crs.val = (double*)malloc(C_crs.nnz * sizeof(double));
 
-    // sampled_matrix_multiplication_crs (&C_crs, A, B, &S_crs);
+    printf("START CRS multiplication\n");
+    sampled_matrix_multiplication_crs (&C_crs, A, B, &S_crs);
+    printf("END CRS multiplication\n");
 
     free(S_coo.row_idx);
     free(S_coo.col_idx);

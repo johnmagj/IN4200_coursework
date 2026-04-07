@@ -92,6 +92,7 @@ void translate_coo_to_crs (struct sparse_mat_coo *mat_coo, struct sparse_mat_crs
     // we sort the data by row index, then column index
     odd_even_sort_2_of_3_arrays(nnz, row_indices, cols_indices, vals);
 
+    // Copy over the sorted arrays cols_indices and vals
     memcpy(mat_crs->col_idx, cols_indices, nnz * sizeof(int));
     memcpy(mat_crs->val, vals, nnz * sizeof(double));
 
@@ -118,6 +119,7 @@ void translate_coo_to_crs (struct sparse_mat_coo *mat_coo, struct sparse_mat_crs
         printf("%d\n", mat_crs->row_ptr[i]);
     }
 
+    // We can free the memory of the sorted arrays
     free(row_indices);
     free(cols_indices);
     free(vals);
