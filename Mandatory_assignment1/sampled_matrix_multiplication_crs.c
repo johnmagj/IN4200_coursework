@@ -7,27 +7,22 @@ void sampled_matrix_multiplication_crs(struct sparse_mat_crs *C, double **A, dou
     int n = S->n;
     int nnz = S->nnz;
    
-    int current_row = 0;
-    int current_val_index = 0;
-    
-    for (int index = 0; index < n+1; index++) {
+    // The indices of S->row_ptr are the rows of the sparse matrix
+    for (int i = 0; i < n; i++) {
 
-        if (S->row_ptr[index+1] > current_row) {
+        if (S->row_ptr[i] < S->row_ptr[i+1]) {
             
-            current_row = index;
+            // The columns and values arrays in CRS have the same indexing
+            for (int col_val_index = S->row_ptr[i]; col_val_index < S->row_ptr[i+1]; col_val_index++) {
 
-            int i = current_row;
-            printf("here\n");
-            for (int col_index = 0; col_index < nnz; col_index++) {
-
-                int j = S->col_idx[col_index];
+                int j = S->col_idx[col_val_index];
 
                 double sum = 0;
                 for (int k = 0; k < n; k++) {
                     sum += A[i][k]*B[k][j];
                 }
-
-                C->val[index] = sum*S->val[index];
+                // printf("(%d, %d) %f\n", i+1, j+1, S->val[col_val_index]);
+                C->val[col_val_index] = sum*S->val[col_val_index];
             }
         }
     }
