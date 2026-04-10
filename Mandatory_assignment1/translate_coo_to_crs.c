@@ -99,18 +99,24 @@ void translate_coo_to_crs (struct sparse_mat_coo *mat_coo, struct sparse_mat_crs
     odd_even_sort_2_of_3_arrays(nnz, row_indices, cols_indices, vals);
     printf("    Sort DONE\n");
 
-    // Copy over the sorted arrays cols_indices and vals
+    // Copy over the sorted arrays cols_indices and vals so that row_indices, cols_indices and vals can be freed later
     memcpy(mat_crs->col_idx, cols_indices, nnz * sizeof(int));
     memcpy(mat_crs->val, vals, nnz * sizeof(double));
 
     mat_crs->row_ptr[0] = 0;
     int current_row = 0;
 
-    // As long as the row listed at index i in row_indices are greater then current row,
-    // we fill the row_ptr array with the current index variable i
-    // This in case of the first rows beeing all empty and the first non empty row being say row 3 (the forth row),
-    // then then row 0, 1, and 2 need to all point to the first element in the val array which is at index 0.
-    // Realize that the indices of the row_ptr array represent the rows of the full spare matrix 
+    // Realize that the indices of the row_ptr array represent the rows of the full sparse matrix.
+    // Since we assuming sparse matrices some of the rows might be empty as thus not appearing in row_indices.
+    // We therfore need a logic that can handle a row_indices array like [2,2,4,5] (for a 7x7 sparse matrix).
+    // Here row 0,1,3, and 6 are missing, indicating they contain only zeros.
+    // We have a new row appearing on index 0, 2, and 3.
+    // To indicate the end of the row_ptr array the last element (index: n+1-1) would be the first out of bounds index of row_indices (nnz+1-1), 
+    // so in this case 4, this to comply with the CRS format.
+    // Missing rows and repeated rows between each new row should in row_ptr have the same element value (index of row_indices)
+    // as the index of the expected upcoming new row.
+    // The correct row_ptr should in this case be: [0,0,0,2,2,3,4,4].
+
     for (int i = 0; i < nnz; i++) {
 
         while (row_indices[i] > current_row) {
@@ -118,79 +124,21 @@ void translate_coo_to_crs (struct sparse_mat_coo *mat_coo, struct sparse_mat_crs
             mat_crs->row_ptr[current_row] = i;
         }
     }
+
+    // Since empty rows at the end of the sparse matrix is not counted for in the loop above, 
+    // we must continue from (current_row + 1) iterating to the end of row_ptr (with len n+1, typically >> nnz).
+    // If last element is nozero then we fill the last element (n+1) with out of bounds index for val array (nnz).
+    
+    for (int i = current_row + 1; i < n+1; i++) {
+        mat_crs->row_ptr[i] = nnz;
+    }
         
-    // printf("loop done\n"); 
-
-    // printf("current row: %d\n", current_row);
-
-    // for (int i = 0; i < n+1; i++) {
-    //     printf("%d\n", mat_crs->row_ptr[i]);
-    // }
+    for (int i = 0; i < n+1; i++) {
+        printf("%d\n", mat_crs->row_ptr[i]);
+    }
 
     // We can free the memory of the sorted arrays
     free(row_indices);
     free(cols_indices);
     free(vals);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    for (int i = 0; i < nnz; i++) {
-
-        while (row_indices[i] > current_row) {
-            current_row += 1;
-            mat_crs->row_ptr[current_row] = i;
-        }
-    }
-
-    for (int i = current_row + 1; i < n+1; i++) {
-        mat_crs->row_ptr[i] = nnz;
-    }

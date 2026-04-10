@@ -6,13 +6,14 @@
 int main(int nargs, char **args) {
 
     // char filename_path[256];
-    char filename_path[] = "Data/1138_bus.mtx";
+    // char filename_path[] = "Data/1138_bus.mtx";
     // char filename_path[] = "Data/test_data1.mtx";
     // char filename_path[] = "Data/Ga19As19H42.mtx";
     // char filename_path[] = "Data/t3dl_e.mtx";
     // char filename_path[] = "Data/psmigr_1.mtx";
     // char filename_path[] = "Data/qpband.mtx";
     // char filename_path[] = "Data/test_data2.mtx";
+    char filename_path[] = "Data/test_data3.mtx";
 
     double **A, **B;
     struct sparse_mat_coo S_coo, C_coo;
