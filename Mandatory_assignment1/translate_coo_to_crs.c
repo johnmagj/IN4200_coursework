@@ -71,6 +71,11 @@ void odd_even_sort_2_of_3_arrays(int n, int *arr1, int *arr2, double *arr3) {
         // printf("Row swaps: %d\n", number_of_swaps_row_based);
         // printf("Col swaps: %d\n", number_of_swaps_column_based);
         counter += 1;
+
+        if (counter % 1000 == 0) {
+            printf("    Sort counter (per 1000 iteration): %d, number of swaps this iteration: %d \n", counter, total_number_of_swaps);
+        }
+
     } while (total_number_of_swaps > 0);
 }
 
@@ -90,7 +95,9 @@ void translate_coo_to_crs (struct sparse_mat_coo *mat_coo, struct sparse_mat_crs
 
     // Since the the data in the matrix market format file can be both row or column sorted, or even unsorted,
     // we sort the data by row index, then column index
+    printf("    Sort STARTED\n");
     odd_even_sort_2_of_3_arrays(nnz, row_indices, cols_indices, vals);
+    printf("    Sort DONE\n");
 
     // Copy over the sorted arrays cols_indices and vals
     memcpy(mat_crs->col_idx, cols_indices, nnz * sizeof(int));
@@ -98,6 +105,83 @@ void translate_coo_to_crs (struct sparse_mat_coo *mat_coo, struct sparse_mat_crs
 
     mat_crs->row_ptr[0] = 0;
     int current_row = 0;
+
+    // As long as the row listed at index i in row_indices are greater then current row,
+    // we fill the row_ptr array with the current index variable i
+    // This in case of the first rows beeing all empty and the first non empty row being say row 3 (the forth row),
+    // then then row 0, 1, and 2 need to all point to the first element in the val array which is at index 0.
+    // Realize that the indices of the row_ptr array represent the rows of the full spare matrix 
+    for (int i = 0; i < nnz; i++) {
+
+        while (row_indices[i] > current_row) {
+            current_row += 1;
+            mat_crs->row_ptr[current_row] = i;
+        }
+    }
+        
+    // printf("loop done\n"); 
+
+    // printf("current row: %d\n", current_row);
+
+    // for (int i = 0; i < n+1; i++) {
+    //     printf("%d\n", mat_crs->row_ptr[i]);
+    // }
+
+    // We can free the memory of the sorted arrays
+    free(row_indices);
+    free(cols_indices);
+    free(vals);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     for (int i = 0; i < nnz; i++) {
 
@@ -110,18 +194,3 @@ void translate_coo_to_crs (struct sparse_mat_coo *mat_coo, struct sparse_mat_crs
     for (int i = current_row + 1; i < n+1; i++) {
         mat_crs->row_ptr[i] = nnz;
     }
-        
-    printf("loop done\n"); 
-
-    printf("current row: %d\n", current_row);
-
-    for (int i = 0; i < n+1; i++) {
-        printf("%d\n", mat_crs->row_ptr[i]);
-    }
-
-    // We can free the memory of the sorted arrays
-    free(row_indices);
-    free(cols_indices);
-    free(vals);
-
-}

@@ -1,16 +1,18 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "function_declarations.h"
 
 int main(int nargs, char **args) {
 
     // char filename_path[256];
-    // char filename_path[] = "Data/1138_bus.mtx";
+    char filename_path[] = "Data/1138_bus.mtx";
     // char filename_path[] = "Data/test_data1.mtx";
     // char filename_path[] = "Data/Ga19As19H42.mtx";
     // char filename_path[] = "Data/t3dl_e.mtx";
+    // char filename_path[] = "Data/psmigr_1.mtx";
     // char filename_path[] = "Data/qpband.mtx";
-    char filename_path[] = "Data/test_data2.mtx";
+    // char filename_path[] = "Data/test_data2.mtx";
 
     double **A, **B;
     struct sparse_mat_coo S_coo, C_coo;
@@ -19,20 +21,33 @@ int main(int nargs, char **args) {
     // printf("Enter relative file path to the .mtx file:");
     // scanf("%s", filename_path);
 
+    clock_t t_start, t_stop;
+    double t_tot;
+
+    printf("Reading file STARTED --> ");
+    t_start = clock();
     read_sparse_matrix_from_file(filename_path, &S_coo);
+    t_stop = clock();
+    t_tot = (double)(t_stop - t_start)/CLOCKS_PER_SEC;
+    printf("DONE (time: %gs)\n", t_tot);
 
     printf("--------------------------------\n");
     printf("For file: %s\n", filename_path);
     printf("n: %d, nnz: %d\n", S_coo.n, S_coo.nnz);
-    printf("First: %d, %d, %f\n", S_coo.row_idx[0], S_coo.col_idx[0], S_coo.val[0]);
-    printf("Last: %d, %d, %f\n", S_coo.row_idx[S_coo.nnz-1], S_coo.col_idx[S_coo.nnz-1], S_coo.val[S_coo.nnz-1]);
+    printf("First datapoint: %d, %d, %f\n", S_coo.row_idx[0], S_coo.col_idx[0], S_coo.val[0]);
+    printf("Last datapoint: %d, %d, %f\n", S_coo.row_idx[S_coo.nnz-1], S_coo.col_idx[S_coo.nnz-1], S_coo.val[S_coo.nnz-1]);
     printf("--------------------------------\n");
 
     // Convert from 1-based to 0-based indexing
+    printf("Convert from 1-based indexing to 0-based STARTED --> ");
+    t_start = clock();
     for (int i = 0; i < S_coo.nnz; i++) {
         S_coo.row_idx[i] -= 1;
         S_coo.col_idx[i] -= 1;
     }
+    t_stop = clock();
+    t_tot = (double)(t_stop - t_start)/CLOCKS_PER_SEC;
+    printf("DONE (time: %gs)\n", t_tot);
 
     C_coo.n = S_coo.n; 
     C_coo.nnz = S_coo.nnz;
@@ -60,9 +75,12 @@ int main(int nargs, char **args) {
         }
     }
 
-    printf("START COO multiplication\n");
+    printf("COO multiplication STARTED --> ");
+    t_start = clock();
     sampled_matrix_multiplication_coo(&C_coo, A, B, &S_coo);
-    printf("END COO multiplication\n");
+    t_stop = clock();
+    t_tot = (double)(t_stop - t_start)/CLOCKS_PER_SEC;
+    printf("DONE (time: %gs)\n", t_tot);
 
     // Allocate CRS data structure C_crs
     S_crs.n = S_coo.n; S_crs.nnz = S_coo.nnz;
@@ -70,9 +88,12 @@ int main(int nargs, char **args) {
     S_crs.col_idx = (int*)malloc(S_crs.nnz * sizeof(int));
     S_crs.val = (double*)malloc(S_crs.nnz * sizeof(double));
 
-    printf("START translate from COO to CRS\n");
+    printf("Translating from COO to CRS STARTED: \n");
+    t_start = clock();
     translate_coo_to_crs(&S_coo, &S_crs);
-    printf("END translate from COO to CRS\n");
+    t_stop = clock();
+    t_tot = (double)(t_stop - t_start)/CLOCKS_PER_SEC;
+    printf("Translating from COO to CRS DONE (time: %gs)\n", t_tot);
     // for (int i = 0; i < S_crs.n; i++) {
     //     printf("%d\n", S_crs.row_ptr[i]);
     // }
@@ -83,9 +104,12 @@ int main(int nargs, char **args) {
     C_crs.col_idx = S_crs.col_idx;
     C_crs.val = (double*)malloc(C_crs.nnz * sizeof(double));
 
-    printf("START CRS multiplication\n");
+    printf("CRS multiplication STARTED --> ");
+    t_start = clock();
     sampled_matrix_multiplication_crs (&C_crs, A, B, &S_crs);
-    printf("END CRS multiplication\n");
+    t_stop = clock();
+    t_tot = (double)(t_stop - t_start)/CLOCKS_PER_SEC;
+    printf("DONE (time: %gs)\n", t_tot);
 
     free(S_coo.row_idx);
     free(S_coo.col_idx);
