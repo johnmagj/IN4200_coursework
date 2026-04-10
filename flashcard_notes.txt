@@ -11,6 +11,14 @@ Ch. 3:
 	- ONLY ONE thread can initialize
 - 
 
+----------------------------------------------------------------------
+
+Ch. 6. and 7. OpenMP
+
+- OpenMP, Open Multi-Processing: 
+
+- Parallelize loop nests as far out as possible, prevent OpenMP overhead
+
 
 ----------------------------------------------------------------------
 
