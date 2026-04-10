@@ -5,22 +5,21 @@
 
 int main(int nargs, char **args) {
 
-    // char filename_path[256];
-    // char filename_path[] = "Data/1138_bus.mtx";
+    char filename_path[256];
     // char filename_path[] = "Data/test_data1.mtx";
-    // char filename_path[] = "Data/Ga19As19H42.mtx";
-    // char filename_path[] = "Data/t3dl_e.mtx";
-    // char filename_path[] = "Data/psmigr_1.mtx";
-    char filename_path[] = "Data/qpband.mtx";
     // char filename_path[] = "Data/test_data2.mtx";
     // char filename_path[] = "Data/test_data3.mtx";
+    // char filename_path[] = "Data/1138_bus.mtx";
+    // char filename_path[] = "Data/t3dl_e.mtx";
+    // char filename_path[] = "Data/psmigr_1.mtx";
+    // char filename_path[] = "Data/qpband.mtx";
 
     double **A, **B;
     struct sparse_mat_coo S_coo, C_coo;
     struct sparse_mat_crs S_crs, C_crs;
     
-    // printf("Enter relative file path to the .mtx file:");
-    // scanf("%s", filename_path);
+    printf("Enter relative file path to the .mtx file:");
+    scanf("%s", filename_path);
 
     clock_t t_start, t_stop;
     double t_tot;
@@ -100,9 +99,7 @@ int main(int nargs, char **args) {
     t_stop = clock();
     t_tot = (double)(t_stop - t_start)/CLOCKS_PER_SEC;
     printf("Translate from COO to CRS DONE (time: %gs)\n", t_tot);
-    // for (int i = 0; i < S_crs.n; i++) {
-    //     printf("%d\n", S_crs.row_ptr[i]);
-    // }
+
 
     // allocate CRS data structure C_crs
     C_crs.n = S_crs.n; C_crs.nnz = S_crs.nnz;

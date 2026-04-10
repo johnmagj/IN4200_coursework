@@ -127,7 +127,7 @@ void translate_coo_to_crs (struct sparse_mat_coo *mat_coo, struct sparse_mat_crs
 
     // Since empty rows at the end of the sparse matrix is not counted for in the loop above, 
     // we must continue from (current_row + 1) iterating to the end of row_ptr (with len n+1, typically >> nnz).
-    // If last element is nozero then we fill the last element (n+1) with out of bounds index for val array (nnz).
+    // If last element is nonzero then we fill the last element (n+1) with "out of bounds index" for val array (nnz).
     
     for (int i = current_row + 1; i < n+1; i++) {
         mat_crs->row_ptr[i] = nnz;

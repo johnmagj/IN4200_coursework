@@ -13,7 +13,7 @@ void sampled_matrix_multiplication_crs(struct sparse_mat_crs *C, double **A, dou
     for (int i = 0; i < n; i++) {
 
         // Since S->row_ptr[i] only change value when we jump to a new row, we can check [i+1] to see if current index is the 
-        // actual row for the given idex in val array, if not we keep iterating through S->row_ptr 
+        // actual row for the given index in val array, if not we keep iterating through S->row_ptr 
         if (S->row_ptr[i] < S->row_ptr[i+1]) {
             
             // The columns and values arrays in CRS have the same indexing
