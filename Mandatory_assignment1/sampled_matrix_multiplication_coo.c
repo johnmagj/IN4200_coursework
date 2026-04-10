@@ -7,7 +7,8 @@ void sampled_matrix_multiplication_coo(struct sparse_mat_coo *C, double **A, dou
 
     int n = S->n;
     int nnz = S->nnz;
-   
+
+    #pragma omp parallel for
     for (int index = 0; index < nnz; index++) {
 
         int i = S->row_idx[index];
@@ -20,5 +21,5 @@ void sampled_matrix_multiplication_coo(struct sparse_mat_coo *C, double **A, dou
 
         C->val[index] = sum*S->val[index];
     }
-
+    
 }

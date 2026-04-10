@@ -11,7 +11,7 @@ void read_sparse_matrix_from_file(const char *filename, struct sparse_mat_coo *m
     file = fopen(filename, "r");
 
     if (file == NULL) {
-        printf("Error: could not open file correctly");
+        printf("Error: could not open file correctly ");
         exit(EXIT_FAILURE);
     }
 
@@ -25,7 +25,7 @@ void read_sparse_matrix_from_file(const char *filename, struct sparse_mat_coo *m
     // Check first line in file, if not starting with a '%', exit program
     fgets(line_in_file, sizeof(line_in_file), file);
     if (line_in_file[0] != '%') {
-        printf("Error: file not formatted correctly");
+        printf("Error: file not formatted correctly ");
         exit(EXIT_FAILURE);
     }
 
@@ -39,7 +39,7 @@ void read_sparse_matrix_from_file(const char *filename, struct sparse_mat_coo *m
         else {
 
             if (sscanf(line_in_file, "%d %d %d", &m_rows, &n_cols, &total_values) != 3) {
-                printf("Error: first line with matrix-information not formatted correctly");
+                printf("Error: first line with matrix-information not formatted correctly ");
                 exit(EXIT_FAILURE);
             }
 
@@ -51,12 +51,12 @@ void read_sparse_matrix_from_file(const char *filename, struct sparse_mat_coo *m
     }
 
     if (m_rows == 0 || n_cols == 0 || total_values == 0) {
-        printf("Error: matrix info was not stored properly, should be non zero");
+        printf("Error: matrix info was not stored properly, should be non zero ");
         exit(EXIT_FAILURE);
     }
 
     if (m_rows != n_cols) {
-        printf("Error: the sparse data matrix is NOT square");
+        printf("Error: the sparse data matrix is NOT square ");
         exit(EXIT_FAILURE);
     }
 

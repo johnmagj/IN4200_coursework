@@ -133,9 +133,9 @@ void translate_coo_to_crs (struct sparse_mat_coo *mat_coo, struct sparse_mat_crs
         mat_crs->row_ptr[i] = nnz;
     }
         
-    for (int i = 0; i < n+1; i++) {
-        printf("%d\n", mat_crs->row_ptr[i]);
-    }
+    // for (int i = 0; i < n+1; i++) {
+    //     printf("%d\n", mat_crs->row_ptr[i]);
+    // }
 
     // We can free the memory of the sorted arrays
     free(row_indices);

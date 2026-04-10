@@ -11,9 +11,9 @@ int main(int nargs, char **args) {
     // char filename_path[] = "Data/Ga19As19H42.mtx";
     // char filename_path[] = "Data/t3dl_e.mtx";
     // char filename_path[] = "Data/psmigr_1.mtx";
-    // char filename_path[] = "Data/qpband.mtx";
+    char filename_path[] = "Data/qpband.mtx";
     // char filename_path[] = "Data/test_data2.mtx";
-    char filename_path[] = "Data/test_data3.mtx";
+    // char filename_path[] = "Data/test_data3.mtx";
 
     double **A, **B;
     struct sparse_mat_coo S_coo, C_coo;
@@ -25,7 +25,7 @@ int main(int nargs, char **args) {
     clock_t t_start, t_stop;
     double t_tot;
 
-    printf("Reading file STARTED --> ");
+    printf("Read file STARTED --> ");
     t_start = clock();
     read_sparse_matrix_from_file(filename_path, &S_coo);
     t_stop = clock();
@@ -57,6 +57,8 @@ int main(int nargs, char **args) {
     C_coo.val = malloc(C_coo.nnz*sizeof(*C_coo.val));
     
     int n = S_coo.n;
+    printf("Create dense matrices A and B, STARTED --> ");
+    t_start = clock();
     // Create dense matrices A and B,
     A = malloc(n * sizeof(*A));
     A[0] = malloc(n*n*sizeof(*A[0]));
@@ -75,6 +77,9 @@ int main(int nargs, char **args) {
             B[i][j] = 1;
         }
     }
+    t_stop = clock();
+    t_tot = (double)(t_stop - t_start)/CLOCKS_PER_SEC;
+    printf("DONE (time: %gs)\n", t_tot);
 
     printf("COO multiplication STARTED --> ");
     t_start = clock();
@@ -89,12 +94,12 @@ int main(int nargs, char **args) {
     S_crs.col_idx = (int*)malloc(S_crs.nnz * sizeof(int));
     S_crs.val = (double*)malloc(S_crs.nnz * sizeof(double));
 
-    printf("Translating from COO to CRS STARTED: \n");
+    printf("Translate from COO to CRS STARTED: \n");
     t_start = clock();
     translate_coo_to_crs(&S_coo, &S_crs);
     t_stop = clock();
     t_tot = (double)(t_stop - t_start)/CLOCKS_PER_SEC;
-    printf("Translating from COO to CRS DONE (time: %gs)\n", t_tot);
+    printf("Translate from COO to CRS DONE (time: %gs)\n", t_tot);
     // for (int i = 0; i < S_crs.n; i++) {
     //     printf("%d\n", S_crs.row_ptr[i]);
     // }

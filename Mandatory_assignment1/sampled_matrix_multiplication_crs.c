@@ -8,12 +8,16 @@ void sampled_matrix_multiplication_crs(struct sparse_mat_crs *C, double **A, dou
     int n = S->n;
     int nnz = S->nnz;
    
+    #pragma omp parallel for schedule(guided)
     // The indices of S->row_ptr are the rows of the sparse matrix
     for (int i = 0; i < n; i++) {
 
+        // Since S->row_ptr[i] only change value when we jump to a new row, we can check [i+1] to see if current index is the 
+        // actual row for the given idex in val array, if not we keep iterating through S->row_ptr 
         if (S->row_ptr[i] < S->row_ptr[i+1]) {
             
             // The columns and values arrays in CRS have the same indexing
+            // Iterating over the columns in a given row
             for (int col_val_index = S->row_ptr[i]; col_val_index < S->row_ptr[i+1]; col_val_index++) {
 
                 int j = S->col_idx[col_val_index];
