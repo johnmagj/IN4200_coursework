@@ -15,4 +15,4 @@ build:
 	-o main$(EXT)
 
 run:
-	.\main$(EXT)
+	./main$(EXT)
