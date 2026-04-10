@@ -10,3 +10,33 @@ Ch. 3:
 	- master vs fork(?) threads
 	- ONLY ONE thread can initialize
 - 
+
+
+----------------------------------------------------------------------
+
+Ch. 9. Distributed-memory parallel programming with MPI
+
+- To compile: mpicc code.c -o code.exe
+- To run: mpiexec -n number_of_processes code.exe
+
+- Message Passing Interface, MPI: A standardized library interface that allows for parallel applications to run across different hardware and network computer clusters
+
+- Processes: An instance of the program
+	- Will have its own virtual memory map, so each process will have their own stack and heap
+	- All variables are local to the process
+	- E.g. will buffer overflow in a process not reach the other processes since each process is essentially a "sandbox"
+
+- Rank: process ID within MPI sphere, makes it easy for the system to distinguish processes unlike PIDs which could be similar for two different computers on same cluster. Goes from 0 to (processes - 1)
+
+- SPMD: Single Program Multiple Data
+
+- Message: allows for data for be shared between processes, consist of the "data" and the "envelope"
+	- Data consist of:
+		1. Buffer:
+		2. Count:
+		3. Datatype:
+
+	- Envelope consist of:
+		1. Source/Destination:
+		2. Tag: 
+		3. Communicator:
