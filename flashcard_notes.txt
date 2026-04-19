@@ -37,8 +37,9 @@ Ch. 9. Distributed-memory parallel programming with MPI
 - Rank: process ID within MPI sphere, makes it easy for the system to distinguish processes unlike PIDs which could be similar for two different computers on same cluster. Goes from 0 to (processes - 1)
 
 - SPMD: Single Program Multiple Data
+	- Each process is its own space/window on the computer
 
-- Message: allows for data for be shared between processes, consist of the "data" and the "envelope"
+- Message: allows for data to be shared between processes, consist of the "data" and the "envelope"
 	- Data consist of:
 		1. Buffer:
 		2. Count:
@@ -48,3 +49,13 @@ Ch. 9. Distributed-memory parallel programming with MPI
 		1. Source/Destination:
 		2. Tag: 
 		3. Communicator:
+
+- MPI Point-to-point communication: From one process to another process
+- MPI Collective communication: Between all processes, or a subgroup of processes
+
+- Blocking point-to-point communication: Function calls like MPI_Send and MPI_Recv that does not return (complete and make the program jump to the next line in the user code) before the data being sent or received respectively before this data is store completely or in some temporary location by MPI. Meaning the data can be used by the user code without problems. Downsides are that the program might have to wait for MPI, or that two processes both end up waiting for each other causing a so called deadlock.
+
+- MPI_Sendrecv:
+	- ensures no deadlock
+
+- Non blocking MPI communication:
