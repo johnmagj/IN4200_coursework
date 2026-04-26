@@ -41,17 +41,19 @@ Ch. 9. Distributed-memory parallel programming with MPI
 
 - Message: allows for data to be shared between processes, consist of the "data" and the "envelope"
 	- Data consist of:
-		1. Buffer:
+		1. Buffer: Fancy word for memory address
 		2. Count:
 		3. Datatype:
 
 	- Envelope consist of:
 		1. Source/Destination:
 		2. Tag: 
-		3. Communicator:
+		3. Communicator: Object defining a group of processes allowed to communicate with each other
 
 - MPI Point-to-point communication: From one process to another process
 - MPI Collective communication: Between all processes, or a subgroup of processes
+
+- Collective functions/operations: Must be called at the same time by all processes/ranks, or we can get deadlock
 
 - Blocking point-to-point communication: Function calls like MPI_Send and MPI_Recv that does not return (complete and make the program jump to the next line in the user code) before the data being sent or received respectively before this data is store completely or in some temporary location by MPI. Meaning the data can be used by the user code without problems. Downsides are that the program might have to wait for MPI, or that two processes both end up waiting for each other causing a so called deadlock.
 
