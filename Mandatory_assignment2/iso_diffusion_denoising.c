@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include "function_declarations.h"
 
 void iso_diffusion_denoising(image *u, image *u_bar, float kappa, int iters) {
@@ -24,10 +23,12 @@ void iso_diffusion_denoising(image *u, image *u_bar, float kappa, int iters) {
             }
         }
 
+        // Pointer swap, not for last iteration making u_bar->image_data last version
         if (iter < iters - 1) {
             float **temp = u->image_data;
             u->image_data = u_bar->image_data;
             u_bar->image_data = temp;
         }
+        printf("iter: %d/%d\n", iter+1, iters);
     }
 }
