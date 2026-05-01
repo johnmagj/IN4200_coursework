@@ -103,4 +103,7 @@ $RECYCLE.BIN/
 # Ignore the following folders and files
 Mandatory_assignment1/Data/*
 
+Mandatory_assignment2/example_folder/*
+Mandatory_assignment2/_changed_and_removed_files/*
+
 # End of https://www.toptal.com/developers/gitignore/api/c,windows,visualstudiocode
