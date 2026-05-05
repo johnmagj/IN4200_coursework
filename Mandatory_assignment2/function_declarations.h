@@ -19,4 +19,6 @@ void convert_image_to_jpeg(const image *u, unsigned char* image_chars);
 
 void iso_diffusion_denoising(image *u, image *u_bar, float kappa, int iters);
 
+void iso_diffusion_denoising_parallel(image *u, image *u_bar, float kappa, int iters);
+
 #endif
