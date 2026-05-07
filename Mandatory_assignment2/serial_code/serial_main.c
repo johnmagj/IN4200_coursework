@@ -30,12 +30,12 @@ int main(int argc, char *argv[]) {
     allocate_image(&u_bar, m, n);
     // Fill the empty 2d array u->image_data with the values from the 1d array image_chars
     printf("Start converting from jpeg to image --> ");
-    convert_jpeg_to_image (image_chars, &u);
+    convert_jpeg_to_image(image_chars, &u);
     printf("DONE\n");
 
     iso_diffusion_denoising(&u, &u_bar, kappa, iters);
 
-    convert_image_to_jpeg (&u_bar, image_chars);
+    convert_image_to_jpeg(&u_bar, image_chars);
     export_JPEG_file(output_jpeg_filename, image_chars, m, n, c, 75);
 
     deallocate_image(&u);

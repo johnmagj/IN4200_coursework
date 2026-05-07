@@ -1,9 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <mpi.h>
 #include "function_declarations.h"
 
 void iso_diffusion_denoising_parallel(image *u, image *u_bar, float kappa, int iters) {
-    
+
+    // Get rank and total number of processes from parallel_main 
+    int my_rank, num_procs;
+    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &num_procs);
+
     for (int iter = 0; iter < iters; iter++) {
         for (int i = 0; i < u->m; i++) {
             for (int j = 0; j < u->n; j++) {
@@ -30,5 +36,63 @@ void iso_diffusion_denoising_parallel(image *u, image *u_bar, float kappa, int i
             u_bar->image_data = temp;
         }
         printf("iter: %d/%d\n", iter+1, iters);
+
+        if (my_rank == 0) {
+            MPI_Sendrecv(&u->image_data[u->m-2][0],
+                         u->n,
+                         MPI_FLOAT,
+                         1,
+                         102,
+                         &u->image_data[u->m-1][0],
+                         u->n,
+                         MPI_FLOAT,
+                         1,
+                         102,
+                         MPI_COMM_WORLD,
+                         MPI_STATUS_IGNORE);
+        }
+        else if (my_rank == num_procs - 1) {
+            MPI_Sendrecv(&u->image_data[1][0],
+                         u->n,
+                         MPI_FLOAT,
+                         my_rank-1,
+                         101,
+                         &u->image_data[0][0],
+                         u->n,
+                         MPI_FLOAT,
+                         my_rank-1,
+                         101,
+                         MPI_COMM_WORLD,
+                         MPI_STATUS_IGNORE);
+        }
+        else {
+            // Upward send
+            MPI_Sendrecv(&u->image_data[1][0],
+                         u->n,
+                         MPI_FLOAT,
+                         my_rank-1,
+                         101,
+                         &u->image_data[0][0],
+                         u->n,
+                         MPI_FLOAT,
+                         my_rank-1,
+                         101,
+                         MPI_COMM_WORLD,
+                         MPI_STATUS_IGNORE);
+
+            // Downward send
+                        MPI_Sendrecv(&u->image_data[u->m-2][0],
+                         u->n,
+                         MPI_FLOAT,
+                         my_rank+1,
+                         102,
+                         &u->image_data[u->m-1][0],
+                         u->n,
+                         MPI_FLOAT,
+                         my_rank+1,
+                         102,
+                         MPI_COMM_WORLD,
+                         MPI_STATUS_IGNORE);
+        }
     }
 }

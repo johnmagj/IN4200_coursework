@@ -10,7 +10,7 @@ int main(int argc, char *argv[]) {
     int my_m, my_rank, num_procs;
     float kappa;
     image u, u_bar, whole_image;
-    unsigned char *image_chars, my_image_chars;
+    unsigned char *image_chars, *my_image_chars;
     char *input_jpeg_filename, *output_jpeg_filename;
 
     MPI_Init(&argc, &argv);
@@ -18,12 +18,13 @@ int main(int argc, char *argv[]) {
     MPI_Comm_size(MPI_COMM_WORLD, &num_procs);
 
     // Read from command line and assign to variables
-    kappa = atof(argv[1]);
-    iters = atol(argv[2]);
-    input_jpeg_filename = argv[3];
-    output_jpeg_filename = argv[4];
-
+    // Only done by main rank 0
     if (my_rank == 0) {
+        kappa = atof(argv[1]);
+        iters = atol(argv[2]);
+        input_jpeg_filename = argv[3];
+        output_jpeg_filename = argv[4];
+  
         import_JPEG_file(input_jpeg_filename, &image_chars, &m, &n, &c);
         allocate_image(&whole_image, m, n);
     }
@@ -35,12 +36,16 @@ int main(int argc, char *argv[]) {
 
     printf("myrank: %d, m = %d\n", my_rank, m);
 
+    // Horizontal decomposition of image matrix
     int minimum_rows_per_rank = m/num_procs;
     int remaining_rows = m % num_procs;
 
     int *total_rows_per_rank = malloc(num_procs*sizeof(*total_rows_per_rank));
     int *send_counts = malloc(num_procs*sizeof(*total_rows_per_rank));
-    int *send_displacement = malloc(num_procs*sizeof(*total_rows_per_rank));    
+    int *send_displacement = malloc(num_procs*sizeof(*total_rows_per_rank));
+
+    int *recv_counts = malloc(num_procs*sizeof(*total_rows_per_rank));
+    int *recv_displacement = malloc(num_procs*sizeof(*total_rows_per_rank));   
 
     int first_rank_with_one_extra_row = num_procs - remaining_rows;
     int displacement_counter = 0;
@@ -53,7 +58,9 @@ int main(int argc, char *argv[]) {
         total_rows_per_rank[rank] = numb_rows_this_rank;
         int counts = numb_rows_this_rank*n;
         send_counts[rank] = counts;
+        recv_counts[rank] = counts;
         send_displacement[rank] = displacement_counter;
+        recv_displacement[rank] = displacement_counter;
         displacement_counter += counts;
 
         // Adjust displacement to add one more row bellow the first rank, and one more row above the last rank, 
@@ -81,26 +88,34 @@ int main(int argc, char *argv[]) {
 
     allocate_image(&u, my_m, n);
     allocate_image(&u_bar, my_m, n);
+
+    my_image_chars = malloc(send_counts[my_rank]*sizeof(*my_image_chars));
+        
+    MPI_Scatterv(image_chars,
+                 send_counts,
+                 send_displacement,
+                 MPI_UNSIGNED_CHAR,
+                 my_image_chars,
+                 send_counts[my_rank],
+                 MPI_UNSIGNED_CHAR,
+                 0,
+                 MPI_COMM_WORLD);
+
+    convert_jpeg_to_image (my_image_chars, &u);
+    iso_diffusion_denoising_parallel (&u, &u_bar, kappa, iters);
+
+    // float *recv_u_bar = malloc(m*n*sizeof(*recv_u_bar));  
+
+    // MPI_Gatherv(u_bar,
+    //             recv_counts[my_rank],
+    //             MPI_FLOAT,
+    //             recv_u_bar,
+    //             recv_counts,
+    //             recv_displacement,
+    //             MPI_FLOAT,
+    //             0,
+    //             MPI_COMM_WORLD);
     
-    double *recv_img = malloc(my_m*n*sizeof(*recv_img));
-    MPI_Scatterv(whole_image.image_data[0], send_counts, send_displacement, MPI_DOUBLE, recv_img, send_counts[my_rank], MPI_DOUBLE, 0, MPI_COMM_WORLD);
-
-
-    // allocate_image(&u, m, n);
-    // allocate_image(&u_bar, m, n);
-    // // Fill the empty 2d array u->image_data with the values from the 1d array image_chars
-    // printf("Start converting from jpeg to image --> ");
-    // convert_jpeg_to_image (image_chars, &u);
-    // printf("DONE\n");
-
-    // iso_diffusion_denoising(&u, &u_bar, kappa, iters);
-
-    // convert_image_to_jpeg (&u_bar, image_chars);
-    // export_JPEG_file(output_jpeg_filename, image_chars, m, n, c, 75);
-
-    // deallocate_image(&u);
-    // deallocate_image(&u_bar);
-
     if (my_rank == 0) {
         allocate_image (&whole_image, m, n);
     }
