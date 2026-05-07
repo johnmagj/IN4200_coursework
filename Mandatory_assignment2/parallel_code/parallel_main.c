@@ -26,7 +26,6 @@ int main(int argc, char *argv[]) {
         output_jpeg_filename = argv[4];
   
         import_JPEG_file(input_jpeg_filename, &image_chars, &m, &n, &c);
-        allocate_image(&whole_image, m, n);
     }
 
     MPI_Bcast(&m, 1, MPI_INT, 0, MPI_COMM_WORLD);
@@ -44,6 +43,7 @@ int main(int argc, char *argv[]) {
     int *send_counts = malloc(num_procs*sizeof(*total_rows_per_rank));
     int *send_displacement = malloc(num_procs*sizeof(*total_rows_per_rank));
 
+    int *recv_total_rows_per_rank = malloc(num_procs*sizeof(*total_rows_per_rank));
     int *recv_counts = malloc(num_procs*sizeof(*total_rows_per_rank));
     int *recv_displacement = malloc(num_procs*sizeof(*total_rows_per_rank));   
 
@@ -56,6 +56,7 @@ int main(int argc, char *argv[]) {
 
         // Calculate counts and displacement with no halo rows
         total_rows_per_rank[rank] = numb_rows_this_rank;
+        recv_total_rows_per_rank[rank] = numb_rows_this_rank;
         int counts = numb_rows_this_rank*n;
         send_counts[rank] = counts;
         recv_counts[rank] = counts;
@@ -104,22 +105,27 @@ int main(int argc, char *argv[]) {
     convert_jpeg_to_image (my_image_chars, &u);
     iso_diffusion_denoising_parallel (&u, &u_bar, kappa, iters);
 
-    // float *recv_u_bar = malloc(m*n*sizeof(*recv_u_bar));  
+    // Must be allocated in all processes to work with MPI_Gatherv
+    allocate_image(&whole_image, m, n);
 
-    // MPI_Gatherv(u_bar,
-    //             recv_counts[my_rank],
-    //             MPI_FLOAT,
-    //             recv_u_bar,
-    //             recv_counts,
-    //             recv_displacement,
-    //             MPI_FLOAT,
-    //             0,
-    //             MPI_COMM_WORLD);
-    
+    MPI_Gatherv(&u_bar.image_data[0][0],
+                recv_counts[my_rank],
+                MPI_FLOAT,
+                &whole_image.image_data[0][0],
+                recv_counts,
+                recv_displacement,
+                MPI_FLOAT,
+                0,
+                MPI_COMM_WORLD);
+
     if (my_rank == 0) {
-        allocate_image (&whole_image, m, n);
+        convert_image_to_jpeg(&whole_image, image_chars);
+        export_JPEG_file(output_jpeg_filename, image_chars, m, n, c, 75);   
     }
 
+    deallocate_image (&whole_image);
+
+    
     MPI_Finalize();
 
     return 0;
