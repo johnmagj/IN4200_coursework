@@ -59,5 +59,6 @@ Ch. 9. Distributed-memory parallel programming with MPI
 
 - MPI_Sendrecv:
 	- ensures no deadlock
+	- IMPORTANT: The process that makes the MPI_Sendrecv call is the sender. Thus both of the arguments "recipient" and "sender" is the other process. Both the "buffer_send" and the "buffer_recv" is on the process making the MPI_Sendrecv call. There must be a corresponding MPI_Sendrecv from the other process.
 
 - Non blocking MPI communication:
