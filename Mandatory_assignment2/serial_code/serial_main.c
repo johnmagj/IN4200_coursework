@@ -17,10 +17,10 @@ int main(int argc, char *argv[]) {
     input_jpeg_filename = argv[3];
     output_jpeg_filename = argv[4];
 
-    printf("%f\n", kappa);
-    printf("%d\n", iters);
-    printf("%s\n", input_jpeg_filename);
-    printf("%s\n", output_jpeg_filename);
+    // printf("%f\n", kappa);
+    // printf("%d\n", iters);
+    // printf("%s\n", input_jpeg_filename);
+    // printf("%s\n", output_jpeg_filename);
 
     import_JPEG_file(input_jpeg_filename, &image_chars, &m, &n, &c);
 
@@ -28,10 +28,9 @@ int main(int argc, char *argv[]) {
 
     allocate_image(&u, m, n);
     allocate_image(&u_bar, m, n);
+    
     // Fill the empty 2d array u->image_data with the values from the 1d array image_chars
-    printf("Start converting from jpeg to image --> ");
     convert_jpeg_to_image(image_chars, &u);
-    printf("DONE\n");
 
     iso_diffusion_denoising(&u, &u_bar, kappa, iters);
 

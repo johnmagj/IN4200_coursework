@@ -116,6 +116,6 @@ void iso_diffusion_denoising_parallel(image *u, image *u_bar, float kappa, int i
             u->image_data = u_bar->image_data;
             u_bar->image_data = temp;
         }
-        printf("iter: %d/%d\n", iter+1, iters);
+        // printf("iter: %d/%d\n", iter+1, iters);
     }
 }

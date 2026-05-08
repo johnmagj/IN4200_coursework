@@ -125,6 +125,13 @@ int main(int argc, char *argv[]) {
 
     deallocate_image (&whole_image);
 
+    free(total_rows_per_rank);
+    free(send_counts);
+    free(send_displacement);
+
+    free(recv_total_rows_per_rank);
+    free(recv_counts);
+    free(recv_displacement);
     
     MPI_Finalize();
 

@@ -40,7 +40,7 @@ build_parallel:
 	$(MPICC) $(CODE_FILES_PARALLEL) $(CODE_FILES_SHARED) -o $(EXECUTABLE_PARALLEL) -ljpeg
 
 run_parallel:
-	mpiexec -n 4 ./$(EXECUTABLE_PARALLEL) 0.05 100 mona_lisa_noisy.jpg test_outfile_parallel.jpg
+	mpiexec -n 4 ./$(EXECUTABLE_PARALLEL) 0.05 100 mona_lisa_noisy.jpg outfile_parallel.jpg
 
 clean:
 	-$(RM) $(EXECUTABLE_SERIAL) $(EXECUTABLE_PARALLEL)
