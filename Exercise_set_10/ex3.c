@@ -64,7 +64,16 @@ int main(int nargs, char **args) {
     double *A_recv = malloc(rows_per_rank[rank]*N*sizeof(*A_recv));
 
     MPI_Bcast(x, N, MPI_DOUBLE, root_rank, MPI_COMM_WORLD);
-    MPI_Scatterv(A, send_counts, send_displacements, MPI_DOUBLE, A_recv, send_counts[rank], MPI_DOUBLE, root_rank, MPI_COMM_WORLD);
+    
+    MPI_Scatterv(A,
+                 send_counts,
+                 send_displacements,
+                 MPI_DOUBLE,
+                 A_recv,
+                 send_counts[rank],
+                 MPI_DOUBLE,
+                 root_rank,
+                 MPI_COMM_WORLD);
 
     double *y = NULL;
     double *y_recv = NULL;
@@ -85,7 +94,15 @@ int main(int nargs, char **args) {
         }
     }
 
-    MPI_Gatherv(y, rows_per_rank[rank], MPI_DOUBLE, y_recv, rows_per_rank, recv_displacements, MPI_DOUBLE, root_rank, MPI_COMM_WORLD);
+    MPI_Gatherv(y,
+                rows_per_rank[rank],
+                MPI_DOUBLE,
+                y_recv,
+                rows_per_rank,
+                recv_displacements,
+                MPI_DOUBLE,
+                root_rank,
+                MPI_COMM_WORLD);
 
     if (rank == root_rank) {
 
